@@ -34,6 +34,8 @@ namespace SpaceWar
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            _player.LoadContent(Content);
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -43,6 +45,7 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
+            _player.Update();
 
             base.Update(gameTime);
         }
@@ -52,6 +55,11 @@ namespace SpaceWar
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            _player.Draw(_spriteBatch);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
