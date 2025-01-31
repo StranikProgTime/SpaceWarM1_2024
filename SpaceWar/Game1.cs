@@ -13,12 +13,16 @@ namespace SpaceWar
 
         // Поля
         private Player _player;
+        private Space _space;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            // _graphics.PreferredBackBufferWidth;
+            // _graphics.PreferredBackBufferHeight;
         }
 
         protected override void Initialize()
@@ -26,6 +30,7 @@ namespace SpaceWar
             // TODO: Add your initialization logic here
 
             _player = new Player();
+            _space = new Space();
 
             base.Initialize();
         }
@@ -35,6 +40,7 @@ namespace SpaceWar
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _player.LoadContent(Content);
+            _space.LoadContent(Content);
 
             // TODO: use this.Content to load your game content here
         }
@@ -45,7 +51,11 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
-            _player.Update();
+            _player.Update(
+                _graphics.PreferredBackBufferWidth, 
+                _graphics.PreferredBackBufferHeight
+            );
+            _space.Update();
 
             base.Update(gameTime);
         }
@@ -57,6 +67,7 @@ namespace SpaceWar
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
+            _space.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
 
             _spriteBatch.End();

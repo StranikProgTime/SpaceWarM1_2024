@@ -10,11 +10,14 @@ namespace SpaceWar.Classes
     {
         private Vector2 _position;
         private Texture2D _texture;
+        private float _speed;
 
         public Player()
         {
             _position = new Vector2(30, 30);
             _texture = null;
+
+            _speed = 7;
         }
 
         public void LoadContent(ContentManager content)
@@ -22,12 +25,53 @@ namespace SpaceWar.Classes
             _texture = content.Load<Texture2D>("player");
         }
 
-        public void Update()
+        public void Update(int widthScreen, int heightScreen)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            KeyboardState keyboard = Keyboard.GetState();
+
+            #region Movment
+            if (keyboard.IsKeyDown(Keys.S))
             {
-                _position.Y += 5;
+                _position.Y += _speed;
             }
+
+            if (keyboard.IsKeyDown(Keys.W))
+            {
+                _position.Y -= _speed;
+            }
+
+            if (keyboard.IsKeyDown(Keys.A))
+            {
+                _position.X -= _speed;
+            }
+
+            if (keyboard.IsKeyDown(Keys.D))
+            {
+                _position.X += _speed;
+            }
+            #endregion
+
+            #region Bounds
+            if (_position.X < 0)
+            {
+                _position.X = 0;
+            }
+
+            if (_position.X > widthScreen - _texture.Width)
+            {
+                _position.X = widthScreen - _texture.Width;
+            }
+
+            if (_position.Y < 0)
+            {
+                _position.Y = 0;
+            }
+
+            if (_position.Y > heightScreen - _texture.Height)
+            {
+                _position.Y = heightScreen - _texture.Height;
+            }
+            #endregion
         }
 
         public void Draw(SpriteBatch spriteBatch)
