@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceWar.Classes;
+using System.Collections.Generic;
+
 
 namespace SpaceWar
 {
@@ -14,6 +16,9 @@ namespace SpaceWar
         // Поля
         private Player _player;
         private Space _space;
+        // private Asteroid _asteroid;
+
+        private List<Asteroid> _asteroids;
 
         public Game1()
         {
@@ -31,6 +36,8 @@ namespace SpaceWar
 
             _player = new Player();
             _space = new Space();
+            // _asteroid = new Asteroid();
+            _asteroids = new List<Asteroid>();
 
             base.Initialize();
         }
@@ -41,6 +48,15 @@ namespace SpaceWar
 
             _player.LoadContent(Content);
             _space.LoadContent(Content);
+            // _asteroid.LoadContent(Content);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Asteroid asteroid = new Asteroid(new Vector2(i * 40, 0));
+                asteroid.LoadContent(Content);
+
+                _asteroids.Add(asteroid);
+            }
 
             // TODO: use this.Content to load your game content here
         }
@@ -56,6 +72,12 @@ namespace SpaceWar
                 _graphics.PreferredBackBufferHeight
             );
             _space.Update();
+            // _asteroid.Update();
+
+            foreach (Asteroid asteroid in _asteroids)
+            {
+                asteroid.Update();
+            }
 
             base.Update(gameTime);
         }
@@ -66,10 +88,16 @@ namespace SpaceWar
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+            {
+                _space.Draw(_spriteBatch);
+                _player.Draw(_spriteBatch);
+                // _asteroid.Draw(_spriteBatch);
 
-            _space.Draw(_spriteBatch);
-            _player.Draw(_spriteBatch);
-
+                foreach (Asteroid asteroid in _asteroids)
+                {
+                    asteroid.Draw(_spriteBatch);
+                }
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
