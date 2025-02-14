@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceWar.Classes;
+using System;
 using System.Collections.Generic;
 
 
@@ -52,10 +53,7 @@ namespace SpaceWar
 
             for (int i = 0; i < 10; i++)
             {
-                Asteroid asteroid = new Asteroid(new Vector2(i * 40, 0));
-                asteroid.LoadContent(Content);
-
-                _asteroids.Add(asteroid);
+                LoadAsteroid();
             }
 
             // TODO: use this.Content to load your game content here
@@ -74,10 +72,7 @@ namespace SpaceWar
             _space.Update();
             // _asteroid.Update();
 
-            foreach (Asteroid asteroid in _asteroids)
-            {
-                asteroid.Update();
-            }
+            UpdateAsteroids();
 
             base.Update(gameTime);
         }
@@ -101,6 +96,55 @@ namespace SpaceWar
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void UpdateAsteroids()
+        {
+            for (int i = 0; i < _asteroids.Count; i++)
+            {
+                Asteroid asteroid = _asteroids[i];
+
+                asteroid.Update();
+
+                // teleport
+                if (asteroid.Poisition.Y > _graphics.PreferredBackBufferHeight)
+                {
+                    Random random = new Random();
+
+                    int x = random.Next(0, _graphics.PreferredBackBufferWidth - asteroid.Width);
+                    int y = random.Next(0, _graphics.PreferredBackBufferHeight);
+
+                    asteroid.Poisition = new Vector2(x, -y);
+                }
+
+                // check collision
+                if (asteroid.Collision.Intersects(_player.Collision))
+                {
+                    _asteroids.Remove(asteroid);
+                    i--;
+                }
+            }
+
+            // Загружаем доп. астероиды в игру
+            if (_asteroids.Count < 10)
+            {
+                LoadAsteroid();
+            }
+        }
+
+        private void LoadAsteroid()
+        {
+            Asteroid asteroid = new Asteroid();
+            asteroid.LoadContent(Content);
+
+            Random random = new Random();
+
+            int x = random.Next(0, _graphics.PreferredBackBufferWidth - asteroid.Width);
+            int y = random.Next(0, _graphics.PreferredBackBufferHeight);
+
+            asteroid.Poisition = new Vector2(x, -y);
+
+            _asteroids.Add(asteroid);
         }
     }
 }
