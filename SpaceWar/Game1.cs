@@ -10,6 +10,9 @@ namespace SpaceWar
 {
     public class Game1 : Game
     {
+        // Константы
+        private const int COUNT_ASTERIODS = 10;
+
         // Иструменты
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -51,7 +54,7 @@ namespace SpaceWar
             _space.LoadContent(Content);
             // _asteroid.LoadContent(Content);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < COUNT_ASTERIODS; i++)
             {
                 LoadAsteroid();
             }
@@ -67,7 +70,8 @@ namespace SpaceWar
             // TODO: Add your update logic here
             _player.Update(
                 _graphics.PreferredBackBufferWidth, 
-                _graphics.PreferredBackBufferHeight
+                _graphics.PreferredBackBufferHeight,
+                Content
             );
             _space.Update();
             // _asteroid.Update();
@@ -126,7 +130,7 @@ namespace SpaceWar
             }
 
             // Загружаем доп. астероиды в игру
-            if (_asteroids.Count < 10)
+            if (_asteroids.Count < COUNT_ASTERIODS)
             {
                 LoadAsteroid();
             }
