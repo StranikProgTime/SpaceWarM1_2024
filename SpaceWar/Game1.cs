@@ -77,6 +77,7 @@ namespace SpaceWar
             // _asteroid.Update();
 
             UpdateAsteroids();
+            CheckCollision();
 
             base.Update(gameTime);
         }
@@ -121,8 +122,8 @@ namespace SpaceWar
                     asteroid.Poisition = new Vector2(x, -y);
                 }
 
-                // check collision
-                if (asteroid.Collision.Intersects(_player.Collision))
+                // check isAlive asteroid
+                if (!asteroid.IsAlive)
                 {
                     _asteroids.Remove(asteroid);
                     i--;
@@ -149,6 +150,28 @@ namespace SpaceWar
             asteroid.Poisition = new Vector2(x, -y);
 
             _asteroids.Add(asteroid);
+        }
+
+        private void CheckCollision()
+        {
+            foreach (Asteroid asteroid in _asteroids)
+            {
+                // каждый астероид и игрока
+                if (asteroid.Collision.Intersects(_player.Collision))
+                {
+                    asteroid.IsAlive = false;
+                }
+
+                // каждый астероид и каждую пулую
+                foreach (Bullet bullet in _player.Bullets)
+                {
+                    if (asteroid.Collision.Intersects(bullet.Collision))
+                    {
+                        asteroid.IsAlive = false;
+                        bullet.IsAlive = false;
+                    }
+                }
+            }
         }
     }
 }

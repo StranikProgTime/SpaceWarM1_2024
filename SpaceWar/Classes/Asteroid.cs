@@ -28,6 +28,8 @@ namespace SpaceWar.Classes
             get { return _collision; }
         }
 
+        public bool IsAlive { get; set; }
+
         public Asteroid() : this(Vector2.Zero)
         {
             
@@ -37,6 +39,7 @@ namespace SpaceWar.Classes
         {
             _texture = null;
             _position = position;
+            IsAlive = true;
 
             _collision = new Rectangle((int)_position.X, (int)_position.Y, 0, 0);
         }
