@@ -23,6 +23,7 @@ namespace SpaceWar
         // private Asteroid _asteroid;
 
         private List<Asteroid> _asteroids;
+        private List<Explosion> _explosions;
 
         public Game1()
         {
@@ -42,6 +43,7 @@ namespace SpaceWar
             _space = new Space();
             // _asteroid = new Asteroid();
             _asteroids = new List<Asteroid>();
+            _explosions = new List<Explosion>();
 
             base.Initialize();
         }
@@ -78,6 +80,7 @@ namespace SpaceWar
 
             UpdateAsteroids();
             CheckCollision();
+            UpdateExplosions(gameTime);
 
             base.Update(gameTime);
         }
@@ -96,6 +99,11 @@ namespace SpaceWar
                 foreach (Asteroid asteroid in _asteroids)
                 {
                     asteroid.Draw(_spriteBatch);
+                }
+
+                foreach (Explosion explosion in _explosions)
+                {
+                    explosion.Draw(_spriteBatch);
                 }
             }
             _spriteBatch.End();
@@ -160,6 +168,10 @@ namespace SpaceWar
                 if (asteroid.Collision.Intersects(_player.Collision))
                 {
                     asteroid.IsAlive = false;
+
+                    Explosion explosion = new Explosion(asteroid.Poisition);
+                    explosion.LoadContent(Content);
+                    _explosions.Add(explosion);
                 }
 
                 // каждый астероид и каждую пулую
@@ -169,7 +181,25 @@ namespace SpaceWar
                     {
                         asteroid.IsAlive = false;
                         bullet.IsAlive = false;
+
+                        Explosion explosion = new Explosion(asteroid.Poisition);
+                        explosion.LoadContent(Content);
+                        _explosions.Add(explosion);
                     }
+                }
+            }
+        }
+
+        private void UpdateExplosions(GameTime gameTime)
+        {
+            for (int i = 0; i < _explosions.Count; i++)
+            {
+                _explosions[i].Update(gameTime);
+
+                if (!_explosions[i].IsAlive)
+                {
+                    _explosions.RemoveAt(i);
+                    i--;
                 }
             }
         }
