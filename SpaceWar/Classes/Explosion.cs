@@ -23,6 +23,21 @@ namespace SpaceWar.Classes
 
         public bool IsAlive { get; set; } = true;
 
+        public int Width
+        {
+            get { return _widthFrame; }
+        }
+
+        public int Height
+        {
+            get { return _heightFrame; }
+        }
+
+        public Vector2 Position
+        {
+            set { _position = value; }
+        }
+
         public Explosion(Vector2 position)
         {
             _texture = null;

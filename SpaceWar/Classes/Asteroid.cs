@@ -17,6 +17,11 @@ namespace SpaceWar.Classes
             get { return _texture.Width; }
         }
 
+        public int Height
+        {
+            get { return _texture.Height; }
+        }
+
         public Vector2 Poisition
         {
             set { _position = value; }

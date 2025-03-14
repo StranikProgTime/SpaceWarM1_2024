@@ -20,7 +20,10 @@ namespace SpaceWar
         // Поля
         private Player _player;
         private Space _space;
+        private Label _label;
+        private GameMode _gameMode = GameMode.Playing;
         // private Asteroid _asteroid;
+
 
         private List<Asteroid> _asteroids;
         private List<Explosion> _explosions;
@@ -45,6 +48,8 @@ namespace SpaceWar
             _asteroids = new List<Asteroid>();
             _explosions = new List<Explosion>();
 
+            _label = new Label(Vector2.Zero, "Hello world!", Color.White);
+
             base.Initialize();
         }
 
@@ -60,6 +65,8 @@ namespace SpaceWar
             {
                 LoadAsteroid();
             }
+
+            _label.LoadContent(Content);
 
             // TODO: use this.Content to load your game content here
         }
@@ -105,6 +112,8 @@ namespace SpaceWar
                 {
                     explosion.Draw(_spriteBatch);
                 }
+
+                _label.Draw(_spriteBatch);
             }
             _spriteBatch.End();
 
@@ -170,6 +179,16 @@ namespace SpaceWar
                     asteroid.IsAlive = false;
 
                     Explosion explosion = new Explosion(asteroid.Poisition);
+                    Vector2 position = asteroid.Poisition;
+                    position = new Vector2(
+                        position.X - explosion.Width / 2,
+                        position.Y - explosion.Height / 2
+                    );
+                    position = new Vector2(
+                        position.X + asteroid.Width / 2,
+                        position.Y + asteroid.Height / 2
+                    );
+                    explosion.Position = position;
                     explosion.LoadContent(Content);
                     _explosions.Add(explosion);
                 }
