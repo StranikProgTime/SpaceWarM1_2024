@@ -18,6 +18,16 @@ namespace SpaceWar.Classes
             set { _color = value; }
         }
 
+        public Vector2 SizeText
+        {
+            get { return _spriteFont.MeasureString(_text); }
+        }
+
+        public Vector2 Position
+        {
+            set { _position = value; }
+        }
+
         public Label(Vector2 position, string text, Color color)
         {
             _position = position;

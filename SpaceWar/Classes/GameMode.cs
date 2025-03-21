@@ -4,6 +4,6 @@
     { 
         Menu, 
         Playing, 
-        GameOver 
+        GameOver
     }
 }

@@ -21,8 +21,11 @@ namespace SpaceWar
         private Player _player;
         private Space _space;
         private Label _label;
-        private GameMode _gameMode = GameMode.Playing;
+        private GameMode _gameMode = GameMode.Menu;
         // private Asteroid _asteroid;
+
+        private GameOver _gameOver;
+        private MainMenu _mainMenu;
 
 
         private List<Asteroid> _asteroids;
@@ -48,6 +51,12 @@ namespace SpaceWar
             _asteroids = new List<Asteroid>();
             _explosions = new List<Explosion>();
 
+            _gameOver = new GameOver(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+            );
+            _mainMenu = new MainMenu();
+
             _label = new Label(Vector2.Zero, "Hello world!", Color.White);
 
             base.Initialize();
@@ -67,6 +76,8 @@ namespace SpaceWar
             }
 
             _label.LoadContent(Content);
+            _gameOver.LoadContent(Content);
+            _mainMenu.LoadContent(Content);
 
             // TODO: use this.Content to load your game content here
         }
@@ -77,17 +88,30 @@ namespace SpaceWar
                 Exit();
 
             // TODO: Add your update logic here
-            _player.Update(
-                _graphics.PreferredBackBufferWidth, 
-                _graphics.PreferredBackBufferHeight,
-                Content
-            );
-            _space.Update();
-            // _asteroid.Update();
+            switch (_gameMode)
+            {
+                case GameMode.Menu:
+                    _mainMenu.Update();
+                    break;
+                case GameMode.Playing:
+                    _player.Update(
+                        _graphics.PreferredBackBufferWidth,
+                        _graphics.PreferredBackBufferHeight,
+                        Content
+                    );
+                    _space.Update();
+                    // _asteroid.Update();
 
-            UpdateAsteroids();
-            CheckCollision();
-            UpdateExplosions(gameTime);
+                    UpdateAsteroids();
+                    CheckCollision();
+                    UpdateExplosions(gameTime);
+                    break;
+                case GameMode.GameOver:
+                    _space.Update();
+                    _gameOver.Update();
+                    break;
+            }
+
 
             base.Update(gameTime);
         }
@@ -99,21 +123,33 @@ namespace SpaceWar
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             {
-                _space.Draw(_spriteBatch);
-                _player.Draw(_spriteBatch);
-                // _asteroid.Draw(_spriteBatch);
-
-                foreach (Asteroid asteroid in _asteroids)
+                switch (_gameMode)
                 {
-                    asteroid.Draw(_spriteBatch);
-                }
+                    case GameMode.Menu:
+                        _mainMenu.Draw(_spriteBatch);
+                        break;
+                    case GameMode.Playing:
+                        _space.Draw(_spriteBatch);
+                        _player.Draw(_spriteBatch);
+                        // _asteroid.Draw(_spriteBatch);
 
-                foreach (Explosion explosion in _explosions)
-                {
-                    explosion.Draw(_spriteBatch);
-                }
+                        foreach (Asteroid asteroid in _asteroids)
+                        {
+                            asteroid.Draw(_spriteBatch);
+                        }
 
-                _label.Draw(_spriteBatch);
+                        foreach (Explosion explosion in _explosions)
+                        {
+                            explosion.Draw(_spriteBatch);
+                        }
+
+                        _label.Draw(_spriteBatch);
+                        break;
+                    case GameMode.GameOver:
+                        _space.Draw(_spriteBatch);
+                        _gameOver.Draw(_spriteBatch);
+                        break;
+                }
             }
             _spriteBatch.End();
 
@@ -202,6 +238,16 @@ namespace SpaceWar
                         bullet.IsAlive = false;
 
                         Explosion explosion = new Explosion(asteroid.Poisition);
+                        Vector2 position = asteroid.Poisition;
+                        position = new Vector2(
+                            position.X - explosion.Width / 2,
+                            position.Y - explosion.Height / 2
+                        );
+                        position = new Vector2(
+                            position.X + asteroid.Width / 2,
+                            position.Y + asteroid.Height / 2
+                        );
+                        explosion.Position = position;
                         explosion.LoadContent(Content);
                         _explosions.Add(explosion);
                     }
