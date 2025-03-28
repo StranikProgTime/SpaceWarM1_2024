@@ -21,7 +21,7 @@ namespace SpaceWar
         private Player _player;
         private Space _space;
         private Label _label;
-        private GameMode _gameMode = GameMode.Menu;
+        public static GameMode gameMode = GameMode.Menu;
         // private Asteroid _asteroid;
 
         private GameOver _gameOver;
@@ -55,7 +55,10 @@ namespace SpaceWar
                 _graphics.PreferredBackBufferWidth,
                 _graphics.PreferredBackBufferHeight
             );
-            _mainMenu = new MainMenu();
+            _mainMenu = new MainMenu(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+            );
 
             _label = new Label(Vector2.Zero, "Hello world!", Color.White);
 
@@ -84,13 +87,17 @@ namespace SpaceWar
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (
+                GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
+                Keyboard.GetState().IsKeyDown(Keys.Escape)
+                )
                 Exit();
 
             // TODO: Add your update logic here
-            switch (_gameMode)
+            switch (gameMode)
             {
                 case GameMode.Menu:
+                    _space.Update();
                     _mainMenu.Update();
                     break;
                 case GameMode.Playing:
@@ -110,6 +117,9 @@ namespace SpaceWar
                     _space.Update();
                     _gameOver.Update();
                     break;
+                case GameMode.Exit:
+                    Exit();
+                    break;
             }
 
 
@@ -123,9 +133,10 @@ namespace SpaceWar
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             {
-                switch (_gameMode)
+                switch (gameMode)
                 {
                     case GameMode.Menu:
+                        _space.Draw(_spriteBatch);
                         _mainMenu.Draw(_spriteBatch);
                         break;
                     case GameMode.Playing:
