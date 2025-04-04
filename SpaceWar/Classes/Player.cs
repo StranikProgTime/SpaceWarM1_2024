@@ -13,6 +13,8 @@ namespace SpaceWar.Classes
         private Texture2D _texture;
         private float _speed;
 
+        private int _health = 10;
+
         private Rectangle _collision;
 
         // weapon
@@ -21,6 +23,9 @@ namespace SpaceWar.Classes
         // timer
         private int _timer = 0;
         private int _maxTime = 10;
+
+        // events
+        public event Action TakeDamage;
 
         public Rectangle Collision
         {
@@ -143,6 +148,16 @@ namespace SpaceWar.Classes
             foreach (Bullet bullet in _bulletList)
             {
                 bullet.Draw(spriteBatch);
+            }
+        }
+
+        public void Damage()
+        {
+            _health--;
+
+            if (TakeDamage != null)
+            {
+                TakeDamage();
             }
         }
     }

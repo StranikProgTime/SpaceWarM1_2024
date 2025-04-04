@@ -13,6 +13,11 @@ namespace SpaceWar.Classes
         private Vector2 _position2;
         private float _speed;
 
+        public float Speed
+        {
+            set => _speed = value;
+        }
+
         public Space()
         {
             _texture = null;
