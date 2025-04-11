@@ -14,6 +14,7 @@ namespace SpaceWar.Classes
         private float _speed;
 
         private int _health = 10;
+        private int _score = 0;
 
         private Rectangle _collision;
 
@@ -25,7 +26,8 @@ namespace SpaceWar.Classes
         private int _maxTime = 10;
 
         // events
-        public event Action TakeDamage;
+        public event Action<int> TakeDamage;
+        public event Action<int> UpdateScore;
 
         public Rectangle Collision
         {
@@ -35,6 +37,16 @@ namespace SpaceWar.Classes
         public List<Bullet> Bullets
         {
             get { return _bulletList; }
+        }
+
+        public int Health
+        {
+            get => _health;
+        }
+
+        public int Score
+        {
+            get => _score;
         }
 
         public Player()
@@ -157,8 +169,27 @@ namespace SpaceWar.Classes
 
             if (TakeDamage != null)
             {
-                TakeDamage();
+                TakeDamage(_health);
             }
+        }
+
+        public void AddScore()
+        {
+            _score++;
+
+            if (UpdateScore != null)
+            {
+                UpdateScore(_score);
+            }
+        }
+
+        public void Reset()
+        {
+            _position = new Vector2(350, 400);
+            _score = 0;
+            _health = 10;
+
+            _bulletList.Clear();
         }
     }
 }

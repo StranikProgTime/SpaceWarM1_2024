@@ -17,6 +17,8 @@ namespace SpaceWar.Classes
         private KeyboardState _keyboardState;       // хранит нынешнее состояние клавиатуры
         private KeyboardState _prevKeyboardState;   // хранит предыдущее состояние клавиатуры
 
+        public event Action OnPlayingStarted;
+
         public MainMenu(int widthScreen, int heightScreen)
         {
             _selected = 0;
@@ -92,11 +94,15 @@ namespace SpaceWar.Classes
                 }
             }
 
-            if (_keyboardState.IsKeyDown(Keys.Enter))
+            if (_prevKeyboardState.IsKeyUp(Keys.Enter) &&
+                _keyboardState.IsKeyDown(Keys.Enter))
             {
                 if (_selected == 0) // to Playing
                 {
-                    Game1.gameMode = GameMode.Playing;
+                    if (OnPlayingStarted != null)
+                    {
+                        OnPlayingStarted();
+                    }
                 }
                 else if (_selected == 1) // to Exit
                 {

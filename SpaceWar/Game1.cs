@@ -62,6 +62,9 @@ namespace SpaceWar
             );
 
             _player.TakeDamage += _hud.OnPlayerTakeDamage;
+            _player.UpdateScore += _hud.OnScoreUpdated;
+
+            _mainMenu.OnPlayingStarted += OnPlayingStarted;
 
             base.Initialize();
         }
@@ -115,6 +118,12 @@ namespace SpaceWar
                     UpdateAsteroids();
                     CheckCollision();
                     UpdateExplosions(gameTime);
+
+                    if (_player.Health <= 0)
+                    {
+                        gameMode = GameMode.GameOver;
+                        _gameOver.SetScore(_player.Score);
+                    }
                     break;
                 case GameMode.GameOver:
                     _space.Speed = 0.5f;
@@ -250,6 +259,8 @@ namespace SpaceWar
                             asteroid.Width, 
                             asteroid.Height
                         );
+
+                        _player.AddScore();
                     }
                 }
             }
@@ -284,6 +295,22 @@ namespace SpaceWar
             explosion.Position = position;
             explosion.LoadContent(Content);
             _explosions.Add(explosion);
+        }
+
+        private void OnPlayingStarted()
+        {
+            gameMode = GameMode.Playing;
+
+            Reset();
+        }
+
+        private void Reset()
+        {
+            _player.Reset();
+            _hud.Reset();
+
+            _explosions.Clear();
+            _asteroids.Clear();
         }
     }
 }

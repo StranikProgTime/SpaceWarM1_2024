@@ -28,6 +28,12 @@ namespace SpaceWar.Classes
             set { _position = value; }
         }
 
+        public string Text
+        {
+            get => _text;
+            set => _text = value;
+        }
+
         public Label(Vector2 position, string text, Color color)
         {
             _position = position;

@@ -39,9 +39,20 @@ namespace SpaceWar.Classes
             _labelScore.Draw(spriteBatch);
         }
 
-        public void OnPlayerTakeDamage()
+        public void OnPlayerTakeDamage(int health)
         {
-            _healthBar.NumParts--;
+            _healthBar.NumParts = health;
+        }
+
+        public void OnScoreUpdated(int score)
+        {
+            _labelScore.Text = $"Score: {score}";
+        }
+
+        public void Reset()
+        {
+            _healthBar.NumParts = 10;
+            _labelScore.Text = "Score: 0";
         }
     }
 }
