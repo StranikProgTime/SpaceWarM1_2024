@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace SpaceWar.Classes
 {
@@ -20,6 +21,8 @@ namespace SpaceWar.Classes
         private int _heightFrame = 117;
 
         private Rectangle _sourceRectangle; // нужно для рисования области текстуры
+
+        private SoundEffect _soundEffect;   // Добавление звука взрыва
 
         public bool IsAlive { get; set; } = true;
 
@@ -54,6 +57,8 @@ namespace SpaceWar.Classes
         public void LoadContent(ContentManager content)
         {
             _texture = content.Load<Texture2D>("explosion3");
+
+            _soundEffect = content.Load<SoundEffect>("explosion");
         }
 
         public void Update(GameTime gameTime)
@@ -84,6 +89,18 @@ namespace SpaceWar.Classes
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _position, _sourceRectangle, Color.White);
+        }
+
+        public void PlaySoundEffect()
+        {
+            // Вариант 1
+            // _soundEffect.Play();
+
+            // Вариант 2
+            SoundEffectInstance instance = _soundEffect.CreateInstance();
+
+            instance.Volume = 0.001f;
+            instance.Play();
         }
     }
 }

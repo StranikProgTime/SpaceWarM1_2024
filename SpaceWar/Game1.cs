@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using SpaceWar.Classes;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,11 @@ namespace SpaceWar
         // private Asteroid _asteroid;
         private GameOver _gameOver;
         private MainMenu _mainMenu;
+        private PauseMenu _pauseMenu;
         private HUD _hud;
 
+        private Song _gameSong;
+        private Song _menuSong;
 
         private List<Asteroid> _asteroids;
         private List<Explosion> _explosions;
@@ -60,11 +64,16 @@ namespace SpaceWar
                 _graphics.PreferredBackBufferWidth,
                 _graphics.PreferredBackBufferHeight
             );
+            _pauseMenu = new PauseMenu(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+            );
 
             _player.TakeDamage += _hud.OnPlayerTakeDamage;
             _player.UpdateScore += _hud.OnScoreUpdated;
 
             _mainMenu.OnPlayingStarted += OnPlayingStarted;
+            _pauseMenu.OnPlayingResume += OnPlayingResume;
 
             base.Initialize();
         }
@@ -85,7 +94,14 @@ namespace SpaceWar
 
             _gameOver.LoadContent(Content);
             _mainMenu.LoadContent(Content);
+            _pauseMenu.LoadContent(Content);
 
+            _gameSong = Content.Load<Song>("gameMusic");
+            _menuSong = Content.Load<Song>("menuMusic");
+
+            MediaPlayer.Volume = 0.1f;
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(_menuSong);
             // TODO: use this.Content to load your game content here
         }
 
@@ -105,6 +121,11 @@ namespace SpaceWar
                     _space.Update();
                     _mainMenu.Update();
                     break;
+                case GameMode.Pause:
+                    _space.Speed = 0.5f;
+                    _space.Update();
+                    _pauseMenu.Update();
+                    break;
                 case GameMode.Playing:
                     _space.Speed = 3f;
                     _player.Update(
@@ -123,6 +144,8 @@ namespace SpaceWar
                     {
                         gameMode = GameMode.GameOver;
                         _gameOver.SetScore(_player.Score);
+
+                        MediaPlayer.Play(_menuSong);
                     }
                     break;
                 case GameMode.GameOver:
@@ -151,6 +174,10 @@ namespace SpaceWar
                     case GameMode.Menu:
                         _space.Draw(_spriteBatch);
                         _mainMenu.Draw(_spriteBatch);
+                        break;
+                    case GameMode.Pause:
+                        _space.Draw(_spriteBatch);
+                        _pauseMenu.Draw(_spriteBatch);
                         break;
                     case GameMode.Playing:
                         _space.Draw(_spriteBatch);
@@ -295,13 +322,24 @@ namespace SpaceWar
             explosion.Position = position;
             explosion.LoadContent(Content);
             _explosions.Add(explosion);
+
+            explosion.PlaySoundEffect();
         }
 
         private void OnPlayingStarted()
         {
             gameMode = GameMode.Playing;
 
+            MediaPlayer.Play(_gameSong);
+
             Reset();
+        }
+
+        private void OnPlayingResume()
+        {
+            gameMode = GameMode.Playing;
+
+            MediaPlayer.Play(_gameSong);
         }
 
         private void Reset()

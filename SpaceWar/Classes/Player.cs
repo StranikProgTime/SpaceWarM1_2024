@@ -134,6 +134,7 @@ namespace SpaceWar.Classes
                 bullet.LoadContent(content);
 
                 _bulletList.Add(bullet);
+                bullet.PlaySoundEffect();
                 _timer = 0;
             }
 

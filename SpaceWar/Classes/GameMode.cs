@@ -3,7 +3,8 @@
     public enum GameMode 
     { 
         Menu, 
-        Playing, 
+        Playing,
+        Pause,
         GameOver,
         Exit
     }

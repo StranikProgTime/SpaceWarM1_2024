@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -17,6 +18,8 @@ namespace SpaceWar.Classes
         private Rectangle _destinationRectangle;
 
         private bool _isAlive;
+
+        private SoundEffect _soundEffect;
 
         // Свойства
         public Vector2 Position
@@ -58,7 +61,9 @@ namespace SpaceWar.Classes
 
         public void LoadContent(ContentManager content)
         {
-            _texture = content.Load<Texture2D>("bullet"); 
+            _texture = content.Load<Texture2D>("bullet");
+
+            _soundEffect = content.Load<SoundEffect>("laserFire");
         }
 
         public void Update()
@@ -74,6 +79,14 @@ namespace SpaceWar.Classes
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _destinationRectangle, Color.White);
+        }
+
+        public void PlaySoundEffect()
+        {
+            SoundEffectInstance instance = _soundEffect.CreateInstance();
+
+            instance.Volume = 0.01f;
+            instance.Play();
         }
     }
 }
