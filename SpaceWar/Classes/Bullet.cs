@@ -4,10 +4,11 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceWar.Classes.SaveData;
 
 namespace SpaceWar.Classes
 {
-    public class Bullet
+    public class Bullet : ISaveable
     {
         private Texture2D _texture;
 
@@ -24,6 +25,10 @@ namespace SpaceWar.Classes
         // Свойства
         public Vector2 Position
         {
+            get
+            {
+                return new Vector2(_destinationRectangle.X, _destinationRectangle.Y);
+            }
             set
             {
                 _destinationRectangle.X = (int)value.X;
@@ -87,6 +92,32 @@ namespace SpaceWar.Classes
 
             instance.Volume = 0.01f;
             instance.Play();
+        }
+
+        public object SaveData()
+        {
+            BulletData data = new BulletData()
+            {
+                Position = Position,
+                IsAlive = _isAlive
+            };
+            // data.Position = Position;
+            // data.IsAlive = _isAlive;
+
+            return data;
+        }
+
+        public void LoadData(object data, ContentManager content)
+        {
+            if (!(data is BulletData))
+            {
+                return;
+            }
+
+            BulletData bulletData = (BulletData)data;
+
+            Position = bulletData.Position;
+            _isAlive = bulletData.IsAlive;
         }
     }
 }

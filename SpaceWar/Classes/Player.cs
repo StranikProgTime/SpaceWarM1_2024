@@ -4,10 +4,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using SpaceWar.Classes.SaveData;
 
 namespace SpaceWar.Classes
 {
-    public class Player
+    public class Player : ISaveable
     {
         private Vector2 _position;
         private Texture2D _texture;
@@ -191,6 +192,51 @@ namespace SpaceWar.Classes
             _health = 10;
 
             _bulletList.Clear();
+        }
+
+        public object SaveData()
+        {
+            List<BulletData> bullets = new List<BulletData>();
+
+            foreach (var bullet in _bulletList)
+            {
+                bullets.Add((BulletData)bullet.SaveData());
+            }
+
+            PlayerData data = new PlayerData()
+            {
+                Position = _position,
+                Health = _health,
+                Score = _score,
+                Timer = _timer,
+                Bullets = bullets
+            };
+
+            return data;
+        }
+
+        public void LoadData(object data, ContentManager content)
+        {
+            if (!(data is PlayerData))
+            {
+                return;
+            }
+
+            PlayerData playerData = (PlayerData)data;
+
+            _position = playerData.Position;
+            _health = playerData.Health;
+            _score = playerData.Score;
+            _timer = playerData.Timer;
+
+            foreach (var bullet in playerData.Bullets)
+            {
+                Bullet bull = new Bullet();
+                bull.LoadData(bullet, content);
+                bull.LoadContent(content);
+
+                _bulletList.Add(bull);
+            }
         }
     }
 }

@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using SpaceWar.Classes;
+using SpaceWar.Classes.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json;
 
 
 namespace SpaceWar
@@ -107,12 +109,6 @@ namespace SpaceWar
 
         protected override void Update(GameTime gameTime)
         {
-            if (
-                GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
-                Keyboard.GetState().IsKeyDown(Keys.Escape)
-                )
-                Exit();
-
             // TODO: Add your update logic here
             switch (gameMode)
             {
@@ -144,6 +140,13 @@ namespace SpaceWar
                     {
                         gameMode = GameMode.GameOver;
                         _gameOver.SetScore(_player.Score);
+
+                        MediaPlayer.Play(_menuSong);
+                    }
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    {
+                        gameMode = GameMode.Pause;
 
                         MediaPlayer.Play(_menuSong);
                     }
@@ -349,6 +352,14 @@ namespace SpaceWar
 
             _explosions.Clear();
             _asteroids.Clear();
+        }
+
+        private void SaveGame()
+        {
+            PlayerData playerData = (PlayerData)_player.SaveData();
+
+            string stringData = JsonSerializer.Serialize(playerData);
+            // using System.Text.Json;
         }
     }
 }
