@@ -7,6 +7,7 @@ using SpaceWar.Classes.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 
 
@@ -75,7 +76,9 @@ namespace SpaceWar
             _player.UpdateScore += _hud.OnScoreUpdated;
 
             _mainMenu.OnPlayingStarted += OnPlayingStarted;
+            _mainMenu.OnLoadGame += LoadGame;
             _pauseMenu.OnPlayingResume += OnPlayingResume;
+            _pauseMenu.OnSaveGame += SaveGame;
 
             base.Initialize();
         }
@@ -359,7 +362,38 @@ namespace SpaceWar
             PlayerData playerData = (PlayerData)_player.SaveData();
 
             string stringData = JsonSerializer.Serialize(playerData);
-            // using System.Text.Json;
+
+            // using System.IO;
+
+            // Вариант 1
+            // StreamWriter writer = new StreamWriter("save.json");
+            // writer.WriteLine(stringData);
+            // writer.Close();
+
+            // Вариант 2
+            File.WriteAllText("save.json", stringData);
+
+            gameMode = GameMode.Menu;
+        }
+
+        private void LoadGame()
+        {
+            if (!File.Exists("save.json"))
+            {
+                return;
+            }
+
+            string jsonString = File.ReadAllText("save.json");
+            PlayerData playerData = JsonSerializer.Deserialize<PlayerData>(jsonString);
+
+            if (playerData == null)
+            {
+                return;
+            }
+
+            OnPlayingStarted();
+
+            _player.LoadData(playerData, Content);
         }
     }
 }

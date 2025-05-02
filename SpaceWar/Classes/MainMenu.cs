@@ -10,6 +10,7 @@ namespace SpaceWar.Classes
     public class MainMenu : Menu
     {
         public event Action OnPlayingStarted;
+        public event Action OnLoadGame;
 
         public MainMenu(int widthScreen, int heightScreen) : base(widthScreen, heightScreen)
         {
@@ -25,6 +26,13 @@ namespace SpaceWar.Classes
                 if (OnPlayingStarted != null)
                 {
                     OnPlayingStarted();
+                }
+            }
+            else if (_selected == 1)
+            {
+                if (OnLoadGame != null)
+                {
+                    OnLoadGame();
                 }
             }
             else if (_selected == 2) // to Exit

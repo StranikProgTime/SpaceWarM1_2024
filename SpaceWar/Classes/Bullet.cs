@@ -96,13 +96,10 @@ namespace SpaceWar.Classes
 
         public object SaveData()
         {
-            BulletData data = new BulletData()
-            {
-                Position = Position,
-                IsAlive = _isAlive
-            };
-            // data.Position = Position;
-            // data.IsAlive = _isAlive;
+            BulletData data = new BulletData();
+            data.X = (int)Position.X;
+            data.Y = (int)Position.Y;
+            data.IsAlive = _isAlive;
 
             return data;
         }
@@ -116,7 +113,7 @@ namespace SpaceWar.Classes
 
             BulletData bulletData = (BulletData)data;
 
-            Position = bulletData.Position;
+            Position = new Vector2(bulletData.X, bulletData.Y);
             _isAlive = bulletData.IsAlive;
         }
     }

@@ -10,6 +10,7 @@ namespace SpaceWar.Classes
     public class PauseMenu : Menu
     {
         public event Action OnPlayingResume;
+        public event Action OnSaveGame;
 
         public PauseMenu(int widthScreen, int heightScreen) : base(widthScreen, heightScreen)
         {
@@ -25,6 +26,13 @@ namespace SpaceWar.Classes
                 if (OnPlayingResume != null)
                 {
                     OnPlayingResume();
+                }
+            }
+            else if (_selected == 1)
+            {
+                if (OnSaveGame != null)
+                {
+                    OnSaveGame();
                 }
             }
             else if (_selected == 2) // Exit to menu

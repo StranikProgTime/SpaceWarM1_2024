@@ -203,14 +203,13 @@ namespace SpaceWar.Classes
                 bullets.Add((BulletData)bullet.SaveData());
             }
 
-            PlayerData data = new PlayerData()
-            {
-                Position = _position,
-                Health = _health,
-                Score = _score,
-                Timer = _timer,
-                Bullets = bullets
-            };
+            PlayerData data = new PlayerData();
+            data.X = (int)_position.X;
+            data.Y = (int)_position.Y;
+            data.Health = _health;
+            data.Score = _score;
+            data.Timer = _timer;
+            data.Bullets = bullets;
 
             return data;
         }
@@ -224,7 +223,7 @@ namespace SpaceWar.Classes
 
             PlayerData playerData = (PlayerData)data;
 
-            _position = playerData.Position;
+            _position = new Vector2(playerData.X, playerData.Y);
             _health = playerData.Health;
             _score = playerData.Score;
             _timer = playerData.Timer;
