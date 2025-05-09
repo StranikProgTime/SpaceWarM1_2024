@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 
 namespace SpaceWar
@@ -361,7 +362,29 @@ namespace SpaceWar
         {
             PlayerData playerData = (PlayerData)_player.SaveData();
 
-            string stringData = JsonSerializer.Serialize(playerData);
+            object[] asteroidDatas = new object[_asteroids.Count];
+
+            for (int i = 0; i < _asteroids.Count; i++)
+            {
+                asteroidDatas[i] = _asteroids[i].SaveData();
+            }
+
+            object[] explosionDatas = new object[_explosions.Count];
+
+            for (int i = 0; i < _explosions.Count; i++)
+            {
+                explosionDatas[i] = _explosions[i].SaveData();
+            }
+
+            object[] datas =
+            {
+                _player.SaveData(),
+                _hud.SaveData(),
+                asteroidDatas,
+                explosionDatas
+            };
+
+            string stringData = JsonSerializer.Serialize(datas);
 
             // using System.IO;
 
@@ -384,16 +407,42 @@ namespace SpaceWar
             }
 
             string jsonString = File.ReadAllText("save.json");
-            PlayerData playerData = JsonSerializer.Deserialize<PlayerData>(jsonString);
+            object[] datas = JsonSerializer.Deserialize<object[]>(jsonString);
 
-            if (playerData == null)
+            if (datas == null)
             {
                 return;
             }
 
             OnPlayingStarted();
 
+            PlayerData playerData = ((JsonElement)datas[0]).Deserialize<PlayerData>();
+            HUDData hudData = ((JsonElement)datas[1]).Deserialize<HUDData>();
+
             _player.LoadData(playerData, Content);
+            _hud.LoadData(hudData, Content);
+
+            object[] array = ((JsonElement)datas[2]).Deserialize<object[]>();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                AsteroidData asteroidData = ((JsonElement)array[i]).Deserialize<AsteroidData>();
+
+                Asteroid asteroid = new Asteroid();
+                asteroid.LoadData(asteroidData, Content);
+                _asteroids.Add(asteroid);
+            }
+
+            object[] arrayExplosions = ((JsonElement)datas[3]).Deserialize<object[]>();
+
+            for (int i = 0; i < arrayExplosions.Length; i++)
+            {
+                ExplosionData explosionData = ((JsonElement)arrayExplosions[i]).Deserialize<ExplosionData>();
+
+                Explosion explosion = new Explosion(Vector2.Zero);
+                explosion.LoadData(explosionData, Content);
+                _explosions.Add(explosion);
+            }
         }
     }
 }

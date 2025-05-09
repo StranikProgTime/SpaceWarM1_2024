@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceWar.Classes.SaveData;
 
 namespace SpaceWar.Classes
 {
-    public class HUD
+    public class HUD : ISaveable
     {
         private HealthBar _healthBar;
         private Label _labelScore;
@@ -53,6 +54,29 @@ namespace SpaceWar.Classes
         {
             _healthBar.NumParts = 10;
             _labelScore.Text = "Score: 0";
+        }
+
+        public object SaveData()
+        {
+            HUDData hudData = new HUDData();
+
+            hudData.HealthNumParts = _healthBar.NumParts;
+            hudData.ScoreText = _labelScore.Text;
+
+            return hudData;
+        }
+
+        public void LoadData(object data, ContentManager content)
+        {
+            if (!(data is HUDData))
+            {
+                return;
+            }
+
+            HUDData hudData = (HUDData)data;
+
+            _healthBar.NumParts = hudData.HealthNumParts;
+            _labelScore.Text = hudData.ScoreText;
         }
     }
 }

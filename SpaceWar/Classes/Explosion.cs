@@ -5,10 +5,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Audio;
+using SpaceWar.Classes.SaveData;
 
 namespace SpaceWar.Classes
 {
-    public class Explosion
+    public class Explosion : ISaveable
     {
         private Texture2D _texture; // 1983 x 117
         private Vector2 _position;
@@ -101,6 +102,36 @@ namespace SpaceWar.Classes
 
             instance.Volume = 0.001f;
             instance.Play();
+        }
+
+        public object SaveData()
+        {
+            ExplosionData explosionData = new ExplosionData();
+
+            explosionData.X = (int)_position.X;
+            explosionData.Y = (int)_position.Y;
+            explosionData.Timer = _time;
+            explosionData.FrameNumber = _frameNumber;
+            explosionData.IsAlive = IsAlive;
+
+            return explosionData;
+        }
+
+        public void LoadData(object data, ContentManager content)
+        {
+            if (!(data is ExplosionData))
+            {
+                return;
+            }
+
+            ExplosionData explosionData = (ExplosionData)data;
+
+            _position = new Vector2(explosionData.X, explosionData.Y);
+            _time = explosionData.Timer;
+            _frameNumber = explosionData.FrameNumber;
+            IsAlive = explosionData.IsAlive;
+
+            LoadContent(content);
         }
     }
 }
