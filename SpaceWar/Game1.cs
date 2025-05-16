@@ -32,6 +32,7 @@ namespace SpaceWar
         private MainMenu _mainMenu;
         private PauseMenu _pauseMenu;
         private HUD _hud;
+        private HealBoost _heal;
 
         private Song _gameSong;
         private Song _menuSong;
@@ -59,6 +60,10 @@ namespace SpaceWar
             _asteroids = new List<Asteroid>();
             _explosions = new List<Explosion>();
             _hud = new HUD();
+            _heal = new HealBoost(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+            );
 
             _gameOver = new GameOver(
                 _graphics.PreferredBackBufferWidth,
@@ -92,6 +97,7 @@ namespace SpaceWar
             _space.LoadContent(Content);
             // _asteroid.LoadContent(Content);
             _hud.LoadContent(GraphicsDevice, Content);
+            _heal.LoadContent(Content);
 
             for (int i = 0; i < COUNT_ASTERIODS; i++)
             {
@@ -134,6 +140,7 @@ namespace SpaceWar
                         Content
                     );
                     _space.Update();
+                    _heal.Update();
                     // _asteroid.Update();
 
                     UpdateAsteroids();
@@ -189,6 +196,7 @@ namespace SpaceWar
                     case GameMode.Playing:
                         _space.Draw(_spriteBatch);
                         _player.Draw(_spriteBatch);
+                        _heal.Draw(_spriteBatch);
                         // _asteroid.Draw(_spriteBatch);
 
                         foreach (Asteroid asteroid in _asteroids)
@@ -298,6 +306,13 @@ namespace SpaceWar
                     }
                 }
             }
+
+            if (_heal.Collision.Intersects(_player.Collision))
+            {
+                _heal.Reset();
+                _player.Heal();
+                _hud.OnPlayerHealed();
+            }
         }
 
         private void UpdateExplosions(GameTime gameTime)
@@ -353,6 +368,7 @@ namespace SpaceWar
         {
             _player.Reset();
             _hud.Reset();
+            _heal.Reset();
 
             _explosions.Clear();
             _asteroids.Clear();

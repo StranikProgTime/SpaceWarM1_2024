@@ -175,6 +175,11 @@ namespace SpaceWar.Classes
             }
         }
 
+        public void Heal()
+        {
+            _health = 10;
+        }
+
         public void AddScore()
         {
             _score++;

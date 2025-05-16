@@ -56,6 +56,11 @@ namespace SpaceWar.Classes
             _labelScore.Text = "Score: 0";
         }
 
+        public void OnPlayerHealed()
+        {
+            _healthBar.NumParts = 10;
+        }
+
         public object SaveData()
         {
             HUDData hudData = new HUDData();
