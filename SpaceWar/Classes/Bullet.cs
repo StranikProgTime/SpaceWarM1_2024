@@ -57,7 +57,7 @@ namespace SpaceWar.Classes
             get { return _destinationRectangle; }
         }
 
-        public Bullet()
+        public Bullet(Vector2 velocity, string bulletTexture, string soundEffect)
         {
             _texture = null;
             _isAlive = true;

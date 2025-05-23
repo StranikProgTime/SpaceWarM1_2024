@@ -18,6 +18,7 @@ namespace SpaceWar
     {
         // Константы
         private const int COUNT_ASTERIODS = 10;
+        private const int COUNT_ENEMIES = 10;
 
         // Иструменты
         private GraphicsDeviceManager _graphics;
@@ -39,6 +40,7 @@ namespace SpaceWar
 
         private List<Asteroid> _asteroids;
         private List<Explosion> _explosions;
+        private List<Enemy> _enemies;
 
         public Game1()
         {
@@ -59,6 +61,7 @@ namespace SpaceWar
             // _asteroid = new Asteroid();
             _asteroids = new List<Asteroid>();
             _explosions = new List<Explosion>();
+            _enemies = new List<Enemy>();
             _hud = new HUD();
             _heal = new HealBoost(
                 _graphics.PreferredBackBufferWidth,
@@ -104,6 +107,11 @@ namespace SpaceWar
                 LoadAsteroid();
             }
 
+            for (int i = 0; i < COUNT_ENEMIES; i++)
+            {
+                LoadEnemies();
+            }
+
             _gameOver.LoadContent(Content);
             _mainMenu.LoadContent(Content);
             _pauseMenu.LoadContent(Content);
@@ -144,6 +152,7 @@ namespace SpaceWar
                     // _asteroid.Update();
 
                     UpdateAsteroids();
+                    UpdateEnemies();
                     CheckCollision();
                     UpdateExplosions(gameTime);
 
@@ -209,6 +218,11 @@ namespace SpaceWar
                             explosion.Draw(_spriteBatch);
                         }
 
+                        foreach (Enemy enemy in _enemies)
+                        {
+                            enemy.Draw(_spriteBatch);
+                        }
+
                         _hud.Draw(_spriteBatch);
                         break;
                     case GameMode.GameOver:
@@ -231,14 +245,14 @@ namespace SpaceWar
                 asteroid.Update();
 
                 // teleport
-                if (asteroid.Poisition.Y > _graphics.PreferredBackBufferHeight)
+                if (asteroid.Position.Y > _graphics.PreferredBackBufferHeight)
                 {
                     Random random = new Random();
 
                     int x = random.Next(0, _graphics.PreferredBackBufferWidth - asteroid.Width);
                     int y = random.Next(0, _graphics.PreferredBackBufferHeight);
 
-                    asteroid.Poisition = new Vector2(x, -y);
+                    asteroid.Position = new Vector2(x, -y);
                 }
 
                 // check isAlive asteroid
@@ -256,6 +270,29 @@ namespace SpaceWar
             }
         }
 
+        private void UpdateEnemies()
+        {
+            for (int i = 0; i < _enemies.Count; i++)
+            {
+                Enemy enemy = _enemies[i];
+
+                enemy.Update();
+
+                // check isAlive asteroid
+                if (!enemy.IsAlive)
+                {
+                    _enemies.Remove(enemy);
+                    i--;
+                }
+            }
+
+            // Загружаем доп. астероиды в игру
+            if (_enemies.Count < COUNT_ENEMIES)
+            {
+                LoadEnemies();
+            }
+        }
+
         private void LoadAsteroid()
         {
             Asteroid asteroid = new Asteroid();
@@ -266,9 +303,24 @@ namespace SpaceWar
             int x = random.Next(0, _graphics.PreferredBackBufferWidth - asteroid.Width);
             int y = random.Next(0, _graphics.PreferredBackBufferHeight);
 
-            asteroid.Poisition = new Vector2(x, -y);
+            asteroid.Position = new Vector2(x, -y);
 
             _asteroids.Add(asteroid);
+        }
+
+        private void LoadEnemies()
+        {
+            Enemy enemy = new Enemy(_graphics.PreferredBackBufferHeight);
+            enemy.LoadContent(Content);
+
+            Random random = new Random();
+
+            int x = random.Next(0, _graphics.PreferredBackBufferWidth - enemy.Width);
+            int y = random.Next(enemy.Height, _graphics.PreferredBackBufferHeight + enemy.Height);
+
+            enemy.Position = new Vector2(x, -y);
+
+            _enemies.Add(enemy);
         }
 
         private void CheckCollision()
@@ -282,7 +334,7 @@ namespace SpaceWar
                     _player.Damage();
 
                     CreateExplosion(
-                        asteroid.Poisition,
+                        asteroid.Position,
                         asteroid.Width,
                         asteroid.Height
                     );
@@ -297,12 +349,42 @@ namespace SpaceWar
                         bullet.IsAlive = false;
 
                         CreateExplosion(
-                            asteroid.Poisition, 
+                            asteroid.Position, 
                             asteroid.Width, 
                             asteroid.Height
                         );
 
                         _player.AddScore();
+                    }
+                }
+            }
+
+            foreach (Enemy enemy in _enemies)
+            {
+                if (enemy.Collision.Intersects(_player.Collision))
+                {
+                    enemy.IsAlive = false;
+                    _player.Damage();
+
+                    CreateExplosion(
+                        enemy.Position,
+                        enemy.Width,
+                        enemy.Height
+                    );
+                }
+
+                foreach (Bullet bullet in _player.Bullets)
+                {
+                    if (enemy.Collision.Intersects(bullet.Collision))
+                    {
+                        enemy.IsAlive = false;
+                        bullet.IsAlive = false;
+
+                        CreateExplosion(
+                            enemy.Position,
+                            enemy.Width,
+                            enemy.Height
+                        );
                     }
                 }
             }
