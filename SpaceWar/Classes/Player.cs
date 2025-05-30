@@ -13,6 +13,7 @@ namespace SpaceWar.Classes
         private Vector2 _position;
         private Texture2D _texture;
         private float _speed;
+        private int _heightScreen;
 
         private int _health = 10;
         private int _score = 0;
@@ -50,13 +51,15 @@ namespace SpaceWar.Classes
             get => _score;
         }
 
-        public Player()
+        public Player(int heightScreen)
         {
             _position = new Vector2(30, 30);
             _texture = null;
 
             _speed = 7;
             _collision = new Rectangle((int)_position.X, (int)_position.Y, 0, 0);
+
+            _heightScreen = heightScreen;
         }
 
         public void LoadContent(ContentManager content)
@@ -126,7 +129,12 @@ namespace SpaceWar.Classes
 
             if (keyboard.IsKeyDown(Keys.Space) && _timer >= _maxTime)
             {
-                Bullet bullet = new Bullet();
+                Bullet bullet = new Bullet(
+                    new Vector2(0, -4),
+                    "bullet",
+                    "laserFire",
+                    heightScreen
+                );
                 bullet.Position = new Vector2(
                     _position.X + _texture.Width / 2 - bullet.Width / 2,
                     _position.Y - bullet.Height / 2
@@ -235,7 +243,12 @@ namespace SpaceWar.Classes
 
             foreach (var bullet in playerData.Bullets)
             {
-                Bullet bull = new Bullet();
+                Bullet bull = new Bullet(
+                    new Vector2(0, -4),
+                    "bullet",
+                    "laserFire",
+                    _heightScreen
+                );
                 bull.LoadData(bullet, content);
                 bull.LoadContent(content);
 

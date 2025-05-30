@@ -56,7 +56,7 @@ namespace SpaceWar
         {
             // TODO: Add your initialization logic here
 
-            _player = new Player();
+            _player = new Player(_graphics.PreferredBackBufferHeight);
             _space = new Space();
             // _asteroid = new Asteroid();
             _asteroids = new List<Asteroid>();
@@ -276,7 +276,7 @@ namespace SpaceWar
             {
                 Enemy enemy = _enemies[i];
 
-                enemy.Update();
+                enemy.Update(Content);
 
                 // check isAlive asteroid
                 if (!enemy.IsAlive)
@@ -373,6 +373,21 @@ namespace SpaceWar
                     );
                 }
 
+                foreach (Bullet enemyBullet in enemy.BulletList)
+                {
+                    if (enemyBullet.Collision.Intersects(_player.Collision))
+                    {
+                        enemyBullet.IsAlive = false;
+                        _player.Damage();
+
+                        CreateExplosion(
+                            enemyBullet.Position,
+                            enemyBullet.Width,
+                            enemyBullet.Height
+                        );
+                    }
+                }
+
                 foreach (Bullet bullet in _player.Bullets)
                 {
                     if (enemy.Collision.Intersects(bullet.Collision))
@@ -385,6 +400,15 @@ namespace SpaceWar
                             enemy.Width,
                             enemy.Height
                         );
+                    }
+
+                    foreach (Bullet enemyBullet in enemy.BulletList)
+                    {
+                        if (enemyBullet.Collision.Intersects(bullet.Collision))
+                        {
+                            enemyBullet.IsAlive = false;
+                            bullet.IsAlive = false;
+                        }
                     }
                 }
             }

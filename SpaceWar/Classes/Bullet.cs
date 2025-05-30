@@ -14,7 +14,10 @@ namespace SpaceWar.Classes
 
         private int _width = 20;
         private int _height = 20;
-        private int _speed = 4;
+        private Vector2 _velocity;
+        private string _bulletTexture;
+        private string _soundEffectName;
+        private int _heightScreen;
 
         private Rectangle _destinationRectangle;
 
@@ -57,25 +60,44 @@ namespace SpaceWar.Classes
             get { return _destinationRectangle; }
         }
 
-        public Bullet(Vector2 velocity, string bulletTexture, string soundEffect)
+        public Bullet(
+            Vector2 velocity, 
+            string bulletTexture, 
+            string soundEffectName,
+            int heightScreen
+        )
         {
             _texture = null;
             _isAlive = true;
             _destinationRectangle = new Rectangle(100, 300, _width, _height);
+
+            _velocity = velocity;
+            _bulletTexture = bulletTexture;
+            _soundEffectName = soundEffectName;
+            _heightScreen = heightScreen;
         }
 
         public void LoadContent(ContentManager content)
         {
-            _texture = content.Load<Texture2D>("bullet");
+            _texture = content.Load<Texture2D>(_bulletTexture);
 
-            _soundEffect = content.Load<SoundEffect>("laserFire");
+            if (_soundEffectName != null)
+            {
+                _soundEffect = content.Load<SoundEffect>(_soundEffectName);
+            }
         }
 
         public void Update()
         {
-            _destinationRectangle.Y -= _speed;
+            _destinationRectangle.Y += (int)_velocity.Y;
+            _destinationRectangle.X += (int)_velocity.X;
 
             if (_destinationRectangle.Y <= 0 - _height)
+            {
+                _isAlive = false;
+            }
+
+            if (_destinationRectangle.Y >= _heightScreen)
             {
                 _isAlive = false;
             }
@@ -88,6 +110,11 @@ namespace SpaceWar.Classes
 
         public void PlaySoundEffect()
         {
+            if (_soundEffect == null)
+            {
+                return;
+            }
+
             SoundEffectInstance instance = _soundEffect.CreateInstance();
 
             instance.Volume = 0.01f;
